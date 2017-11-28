@@ -556,15 +556,30 @@
         updateMonthsInView: function() {
             if (this.endDate) {
 
-                //if both dates are visible already, do nothing
+                // if both dates are visible already
+                // do nothing - for linked calendars
                 if (!this.singleDatePicker && this.leftCalendar.month && this.rightCalendar.month &&
                     (this.startDate.format('YYYY-MM') == this.leftCalendar.month.format('YYYY-MM') || this.startDate.format('YYYY-MM') == this.rightCalendar.month.format('YYYY-MM'))
                     &&
                     (this.endDate.format('YYYY-MM') == this.leftCalendar.month.format('YYYY-MM') || this.endDate.format('YYYY-MM') == this.rightCalendar.month.format('YYYY-MM'))
                     ) {
+                        // for non-linked calendar - left calendar - show previous month if the start and end month 
+						if(!this.linkedCalendars && !(this.startDate.format('YYYY-MM') == this.leftCalendar.month.format('YYYY-MM'))) {
+							this.leftCalendar.month = this.startDate.clone().date(2);
+							if(this.leftCalendar.month.get('month') === this.rightCalendar.month.get('month')){
+								this.leftCalendar.month = this.endDate.clone().date(2).subtract(1, 'month');
+                            }
+                        // for non-linked calendar - right calendar - show next month if the start and end month 
+						} else if(!this.linkedCalendars && !(this.endDate.format('YYYY-MM') == this.rightCalendar.month.format('YYYY-MM'))){
+                            this.rightCalendar.month = this.endDate.clone().date(2);
+							if(this.leftCalendar.month.get('month') === this.rightCalendar.month.get('month')){
+								this.rightCalendar.month = this.endDate.clone().date(2).add(1, 'month');
+							}
+                        }
                     return;
-                }
+				}
 
+                // always show previous and current month if the start and end month are same for non-linked calendars
                 // this.leftCalendar.month = this.startDate.clone().date(2);
                 // if (!this.linkedCalendars && (this.endDate.month() != this.startDate.month() || this.endDate.year() != this.startDate.year())) {
                 //     this.rightCalendar.month = this.endDate.clone().date(2);
